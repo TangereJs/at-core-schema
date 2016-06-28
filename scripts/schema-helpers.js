@@ -102,6 +102,9 @@
               };
               result.push(newEntry);
             }
+            if (isArray(entry.events)) {
+              newEntry.events = entry.events;
+            }
           });
         }
     });
