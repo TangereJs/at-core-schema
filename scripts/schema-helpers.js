@@ -218,11 +218,15 @@
     }
 
     if (!mapping) {
-      console.log("Central array of components doesn't contain mapping for type " + displayType);
-      console.log("Property name " + propertyName);
-      console.log("Property definition: " + formatJson(propertyDefinition));
-      console.log("Using mapping for type string instead");
-      mapping = findMapping('string');
+      schemaHelpers.initializeCentralArrayOfComponents();
+      mapping = findMapping(displayType);
+      if (!mapping) {
+        console.log("Central array of components doesn't contain mapping for type " + displayType);
+        console.log("Property name " + propertyName);
+        console.log("Property definition: " + formatJson(propertyDefinition));
+        console.log("Using mapping for type string instead");
+        mapping = findMapping('string');
+      }
     }
 
     element = document.createElement(mapping.elementName);
