@@ -109,7 +109,7 @@
       var obj1Properties = Object.keys(obj1);
       var obj2Properties = Object.keys(obj2);
       // tests that these arrays have same lengths and same names
-      resutl = areEqual(obj1Properties, obj2Properties);
+      result = areEqual(obj1Properties, obj2Properties);
 
       if (!result) {
         return result;
