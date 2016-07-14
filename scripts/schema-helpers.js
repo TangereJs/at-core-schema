@@ -59,9 +59,14 @@
     return Object.prototype.toString.call(obj) === "[object Array]";
   }
 
+  function isNumber(obj) {
+    return Object.prototype.toString.call(obj) === "[object Number]";
+  }
+
   schemaHelpers.isObject = isObject;
   schemaHelpers.isString = isString;
   schemaHelpers.isArray = isArray;
+  schemaHelpers.isNumber = isNumber;
 
   schemaHelpers.isNull = isNull;
   schemaHelpers.isNullOrEmpty = isNullOrEmpty;
@@ -70,6 +75,63 @@
   schemaHelpers.formatJson = formatJson;
   schemaHelpers.capitalize = capitalize;
   schemaHelpers.isFunction = isFunction;
+
+  /**
+   * This function tests for equality of two variables
+   * it works for primitive types string, number, boolean, null and undefined
+   * and reference types of object and array
+   *
+   * For primitive types equality is tested with === operator
+   * For arrays both arrays must have same length and at each index values must also be equal. Equality is tested by recursively calling areEqual function
+   * For objects both objects must have same number of properties, property names must match and property values must match.
+   * Property names testing is not "deep". Only Object.keys(obj) are tested
+   * Property name equality is tested with === operator and property value equality is tested by recursively calling areEqual function
+   */
+  function areEqual(obj1, obj2) {
+    var result = false;
+    var obj1PropertyValue;
+    var obj2PropertyValue;
+
+    if (isArray(obj1) && isArray(obj2)) {
+      result = obj1.length === obj2.length;
+      // if lengths are different return false
+      if(!result) {
+        return result;
+      }
+
+      // else compare items in the arrays for equality
+      for (var i = 0; i < obj1.length && result; i++) {
+        obj1PropertyValue = obj1[i];
+        obj2PropertyValue = obj2[i];
+        result = areEqual(obj1PropertyValue, obj2PropertyValue);
+      }
+    } else if (isObject(obj1) && isObject(obj2)) {
+      var obj1Properties = Object.keys(obj1);
+      var obj2Properties = Object.keys(obj2);
+      // tests that these arrays have same lengths and same names
+      resutl = areEqual(obj1Properties, obj2Properties);
+
+      if (!result) {
+        return result;
+      }
+      // test that every property in both objects has same value
+      for (var j = 0; j < obj1Properties.length && result; j++) {
+        var obj1PropertyName = obj1Properties[j];
+        var obj2PropertyName = obj2Properties[j];
+        obj1PropertyValue = obj1[obj1PropertyName];
+        obj2PropertyValue = obj2[obj2PropertyName];
+        result = areEqual(obj1PropertyValue, obj2PropertyValue);
+      }
+
+    } else {
+      // this tests string, number, boolean, null and undefined
+      result = obj1 === obj2;
+    }
+
+    return result;
+  }
+
+  schemaHelpers.areEqual = areEqual;
 
   // ------------------------------------------------------------
   // initialize central array of components
@@ -132,7 +194,7 @@
       mapping;
 
     for (index = 0; index < length; index++) {
-      var mapping = centralArrayOfComponents[index];
+      mapping = centralArrayOfComponents[index];
       if (Boolean(mapping.xtype)) {
         if (mapping.xtype === propertyType) {
           result = mapping;
@@ -147,7 +209,8 @@
     }
 
     return result;
-  }
+  };
+
   schemaHelpers.findMapping = findMapping;
 
   var isPropertyNameValid = function (propertyName) {
