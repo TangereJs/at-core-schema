@@ -133,6 +133,44 @@
 
   schemaHelpers.areEqual = areEqual;
 
+  function isBoolean(obj) {
+    return Object.prototype.toString.call(obj) === "[object Boolean]";
+  }
+
+  function parseBool(obj) {
+    var result = false;
+    // if obj is undefined or null result is false
+    if (isBoolean(obj)) {
+      // if obj is a boolean value return obj
+      result = obj;
+    } else if (isString(obj)) {
+      // if obj is empty string return false, else return true
+      result = obj !== "";
+
+      if (result) {
+        // if obj is a non empty string
+        // parse int from it because it can be a number literal
+        var intObj = parseFloat(obj);
+
+        if (obj === "false" || obj === "0" || obj === "null" || obj === "undefined") {
+          // if obj is a  string literal "false" or string literal "0" or string literal "null" or literal "undefined" return false
+          result = false;
+        } else if (!isNaN(intObj)) {
+          // if intObj is a valid number
+          result = intObj > 0;
+        }
+      }
+    } else if (isNumber(obj)) {
+      // if obj is number and greater than zero return true, else return false
+      result = obj > 0;
+    } else if (isArray(obj) || isObject(obj) || isFunction(obj)) {
+      result = true;
+    }
+
+    return result;
+  }
+  schemaHelpers.parseBool = parseBool;
+
   // ------------------------------------------------------------
   // initialize central array of components
   // ------------------------------------------------------------
