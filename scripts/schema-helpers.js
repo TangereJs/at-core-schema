@@ -122,7 +122,8 @@
         obj2PropertyValue = obj2[obj2PropertyName];
         result = areEqual(obj1PropertyValue, obj2PropertyValue);
       }
-
+    } else if (isFunction(obj1) && isFunction(obj2)) {
+      result = obj1.toString() === obj2.toString();
     } else {
       // this tests string, number, boolean, null and undefined
       result = obj1 === obj2;
