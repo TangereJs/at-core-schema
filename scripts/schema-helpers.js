@@ -287,23 +287,42 @@
     if (isNullOrEmpty(type)) {
       console.log("Type not declared or type is empty for property definition. Type string assigned by default.");
       console.log("Property definition: " + formatJson(propertyDefinition));
-    } else {
-      displayType = type;
-      if (hasEnum) {
-        displayType = "enum";
-      } else if (notNullOrEmpty(xtype)) {
-        displayType = propertyDefinition.xtype;
-      }
+      return displayType;
+    }
 
-      if (unsupportedTypes.indexOf(displayType) !== -1) {
-        console.log("Type " + displayType + " is not supported.");
-        console.log("Property definition: " + formatJson(propertyDefinition));
-        console.log("Using type string as default");
-        displayType = "string";
+    if (isFunction(type)) {
+      var typeFunctionResult = type();
+      if (isString(typeFunctionResult)) {
+        type = "string";
+      } else if (isNumber(typeFunctionResult)) {
+        type = "number";
+      } else if (isBoolean(typeFunctionResult)) {
+        type = "boolean";
+      } else if (isObject(typeFunctionResult)) {
+        type =  "object";
+      } else if (isArray(typeFunctionResult)) {
+        type = "array";
+      } else {
+        type = "string";
       }
     }
+
+    displayType = type;
+    if (hasEnum) {
+      displayType = "enum";
+    } else if (notNullOrEmpty(xtype)) {
+      displayType = propertyDefinition.xtype;
+    }
+
+    if (unsupportedTypes.indexOf(displayType) !== -1) {
+      console.log("Type " + displayType + " is not supported.");
+      console.log("Property definition: " + formatJson(propertyDefinition));
+      console.log("Using type string as default");
+      displayType = "string";
+    }
+
     return displayType;
-  }
+  };
 
   schemaHelpers.getDisplayType = getDisplayType;
 
