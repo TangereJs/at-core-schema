@@ -192,7 +192,8 @@
                 elementName: is,
                 type: entry.type,
                 title: entry.title,
-                icon: entry.icon
+                icon: entry.icon,
+                invisible: entry.invisible
               };
               result.push(newEntry);
             } else {
@@ -201,7 +202,8 @@
                 type: entry.type,
                 xtype: entry.xtype,
                 title: entry.title,
-                icon: entry.icon
+                icon: entry.icon,
+                invisible: entry.invisible
               };
               result.push(newEntry);
             }
