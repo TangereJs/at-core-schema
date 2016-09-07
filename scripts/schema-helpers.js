@@ -191,7 +191,8 @@
               newEntry = {
                 elementName: is,
                 type: entry.type,
-                title: entry.title
+                title: entry.title,
+                icon: entry.icon
               };
               result.push(newEntry);
             } else {
@@ -199,7 +200,8 @@
                 elementName: is,
                 type: entry.type,
                 xtype: entry.xtype,
-                title: entry.title
+                title: entry.title,
+                icon: entry.icon
               };
               result.push(newEntry);
             }
