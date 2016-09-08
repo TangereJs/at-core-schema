@@ -172,21 +172,6 @@
   }
   schemaHelpers.parseBool = parseBool;
 
-  var copyProperties = function (propertyNames, ignoreList, source, destination) {
-    propertyNames.forEach(function (propName, index) {
-      if (ignoreList.indexOf(propName) === -1) {
-        if (notNull(source[propName])) {
-          try {
-            destination[propName] = source[propName];
-          } catch (e) {
-            console.log(e);
-          }
-        }
-      }
-    });
-  };
-  schemaHelpers.copyProperties = copyProperties;
-
   // ------------------------------------------------------------
   // initialize central array of components
   // ------------------------------------------------------------
@@ -205,11 +190,22 @@
               elementName: is
             };
 
-            if (isNull(entry.xtype)) {
-              copyProperties(Object.keys(entry), [ "events", "xtype" ], entry, newEntry);
-            } else {
-              copyProperties(Object.keys(entry), [ "events" ], entry, newEntry);
-            }
+            // at the bottom of this file there is a copy properites function
+            // we are not using that function on purpose because using it and adding !isArray and !isObject checks
+            // breaks at-form-designer and at-dashboard-designer
+            var entryPropNames = Object.keys(entry);
+            entryPropNames.forEach(function (propName, index) {
+              var sourcePropValue = entry[propName];
+
+              // array and object copying is not implemented yet
+              if (!isArray(sourcePropValue) && !isObject(sourcePropValue)) {
+                try {
+                  newEntry[propName] = sourcePropValue;
+                } catch (e) {
+                  console.log(e);
+                }
+              }
+            });
 
             if (isArray(entry.events)) {
               newEntry.events = entry.events;
@@ -530,4 +526,18 @@
     return propSchemaDef;
   };
 
+  var copyProperties = function (propertyNames, ignoreList, source, destination) {
+    propertyNames.forEach(function (propName, index) {
+      if (ignoreList.indexOf(propName) === -1) {
+        if (notNull(source[propName])) {
+          try {
+            destination[propName] = source[propName];
+          } catch (e) {
+            console.log(e);
+          }
+        }
+      }
+    });
+  };
+  schemaHelpers.copyProperties = copyProperties;
 }(window.schemaHelpers = window.schemaHelpers || {}));
