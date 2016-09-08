@@ -172,6 +172,21 @@
   }
   schemaHelpers.parseBool = parseBool;
 
+  var copyProperties = function (propertyNames, ignoreList, source, destination) {
+    propertyNames.forEach(function (propName, index) {
+      if (ignoreList.indexOf(propName) === -1) {
+        if (notNull(source[propName])) {
+          try {
+            destination[propName] = source[propName];
+          } catch (e) {
+            console.log(e);
+          }
+        }
+      }
+    });
+  };
+  schemaHelpers.copyProperties = copyProperties;
+
   // ------------------------------------------------------------
   // initialize central array of components
   // ------------------------------------------------------------
@@ -181,35 +196,26 @@
       var registrations = Polymer.telemetry.registrations;
       registrations.forEach(function (registration, index) {
         if (registration.$meta && isArray(registration.$meta)) {
-          var
-          is = registration.is,
-          meta = registration.$meta,
-          newEntry;
+          var is = registration.is;
+          var meta = registration.$meta;
+          var newEntry;
 
           meta.forEach(function (entry, index) {
+            newEntry = {
+              elementName: is
+            };
+
             if (isNull(entry.xtype)) {
-              newEntry = {
-                elementName: is,
-                type: entry.type,
-                title: entry.title,
-                icon: entry.icon,
-                invisible: entry.invisible
-              };
-              result.push(newEntry);
+              copyProperties(Object.keys(entry), [ "events", "xtype" ], entry, newEntry);
             } else {
-              newEntry = {
-                elementName: is,
-                type: entry.type,
-                xtype: entry.xtype,
-                title: entry.title,
-                icon: entry.icon,
-                invisible: entry.invisible
-              };
-              result.push(newEntry);
+              copyProperties(Object.keys(entry), [ "events" ], entry, newEntry);
             }
+
             if (isArray(entry.events)) {
               newEntry.events = entry.events;
             }
+
+            result.push(newEntry);
           });
         }
     });
@@ -523,20 +529,5 @@
 
     return propSchemaDef;
   };
-
-  var copyProperties = function (propertyNames, ignoreList, source, destination) {
-    propertyNames.forEach(function (propName, index) {
-      if (ignoreList.indexOf(propName) === -1) {
-        if (notNull(source[propName])) {
-          try {
-            destination[propName] = source[propName];
-          } catch (e) {
-            console.log(e);
-          }
-        }
-      }
-    });
-  }
-  schemaHelpers.copyProperties = copyProperties;
 
 }(window.schemaHelpers = window.schemaHelpers || {}));
