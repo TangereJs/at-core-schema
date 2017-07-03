@@ -186,6 +186,10 @@
           var newEntry;
 
           meta.forEach(function (entry, index) {
+            // if entry doesn't have type property ignore it
+            // this is to filter entries in elements where only playground is disabled
+            if (!entry.type) return;
+
             newEntry = {
               elementName: is
             };
