@@ -532,14 +532,21 @@
 
   var copyProperties = function (propertyNames, ignoreList, source, destination) {
     propertyNames.forEach(function (propName, index) {
-      if (ignoreList.indexOf(propName) === -1) {
-        if (notNull(source[propName])) {
-          try {
-            destination[propName] = source[propName];
-          } catch (e) {
-            console.log(e);
-          }
-        }
+      
+      if (ignoreList.indexOf(propName) !== -1) return;
+      
+      if (isNull(source[propName])) return;
+      
+      var readonly = false;
+      if (destination.properties && destination.properties[propName]) {
+        readonly = destination.properties[propName].readOnly === true;
+      }
+      if (readonly) return;
+      
+      try {
+        destination[propName] = source[propName];
+      } catch (e) {
+        console.log(e);
       }
     });
   };
