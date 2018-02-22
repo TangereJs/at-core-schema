@@ -413,7 +413,10 @@
       } else {
         element.available = available;
       }
-      }
+      
+    } else if (displayType === "checkboxlist") {
+      element.xvaluelist = propertyDefinition.xvaluelist;
+    }
 
     return element;
   };
