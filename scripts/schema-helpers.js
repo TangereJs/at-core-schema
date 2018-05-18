@@ -415,7 +415,9 @@
       }
       
     } else if (displayType === "checkboxlist") {
-      element.xvaluelist = propertyDefinition.xvaluelist;
+      if (isArray(propertyDefinition.xvaluelist) || isString(propertyDefinition.xvaluelist)) {
+        element.xvaluelist = propertyDefinition.xvaluelist;
+      }
     }
 
     return element;
