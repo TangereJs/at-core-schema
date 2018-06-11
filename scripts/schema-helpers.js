@@ -172,96 +172,6 @@
   }
   schemaHelpers.parseBool = parseBool;
 
-  // ------------------------------------------------------------
-  // initialize central array of components
-  // ------------------------------------------------------------
-  var centralArrayOfComponents = [];
-  var initializeCentralArrayOfComponents = function () {
-      var result = [];
-      var registrations = Polymer.telemetry.registrations;
-      registrations.forEach(function (registration, index) {
-        if (registration.$meta && isArray(registration.$meta)) {
-          var is = registration.is;
-          var meta = registration.$meta;
-          var newEntry;
-
-          meta.forEach(function (entry, index) {
-            // if entry doesn't have type property ignore it
-            // this is to filter entries in elements where only playground is disabled
-            if (!entry.type) return;
-
-            newEntry = {
-              elementName: is
-            };
-
-            // at the bottom of this file there is a copy properites function
-            // we are not using that function on purpose because using it and adding !isArray and !isObject checks
-            // breaks at-form-designer and at-dashboard-designer
-            var entryPropNames = Object.keys(entry);
-            entryPropNames.forEach(function (propName, index) {
-              var sourcePropValue = entry[propName];
-
-              // array and object copying is not implemented yet
-              if (!isArray(sourcePropValue) && !isObject(sourcePropValue)) {
-                try {
-                  newEntry[propName] = sourcePropValue;
-                } catch (e) {
-                  console.log(e);
-                }
-              }
-            });
-
-            if (isArray(entry.events)) {
-              newEntry.events = entry.events;
-            }
-
-            result.push(newEntry);
-          });
-        }
-    });
-    schemaHelpers.centralArrayOfComponents = centralArrayOfComponents = result;
-  };
-
-  schemaHelpers.initializeCentralArrayOfComponents = initializeCentralArrayOfComponents;
-  initializeCentralArrayOfComponents();
-
-  document.addEventListener('WebComponentsReady', function(event) {
-    initializeCentralArrayOfComponents();
-  });
-
-
-  /**
-   * Searches the central array of components for the mapping that has type === propertyType or xtype === propertyType
-   * @function findMapping
-   * @return {false|Object} false if mapping is not found; mapping object if mapping is found
-   */
-  var findMapping = function (propertyType) {
-    var
-      result = false,
-      index,
-      length = centralArrayOfComponents.length,
-      mapping;
-
-    for (index = 0; index < length; index++) {
-      mapping = centralArrayOfComponents[index];
-      if (Boolean(mapping.xtype)) {
-        if (mapping.xtype === propertyType) {
-          result = mapping;
-          break;
-        }
-      } else {
-        if (mapping.type === propertyType) {
-          result = mapping;
-          break;
-        }
-      }
-    }
-
-    return result;
-  };
-
-  schemaHelpers.findMapping = findMapping;
-
   var isPropertyNameValid = function (propertyName) {
     // propertyName should contain only lowercase letters, numbers and underscores. It should start with underscore or lowercase letter
     // regex should be used
@@ -336,31 +246,17 @@
 
   schemaHelpers.getDisplayType = getDisplayType;
 
-  var createElement = function (propertyName, displayType, propertyDefinition) {
+  var createElement = function (propertyName, displayType, propertyDefinition, elementName) {
     var element;
     var label = notNull(propertyDefinition.title) ? propertyDefinition.title : capitalize(propertyName);
     var required = Boolean(propertyDefinition.required);
     var disabled = Boolean(propertyDefinition.disabled);
-    var description = notNull(propertyDefinition.description) ? propertyDefinition.description : ' ';
-    var mapping = findMapping(displayType);
 
     if (!propertyDefinition.title && propertyDefinition.description) {
       label = propertyDefinition.description;
     }
 
-    if (!mapping) {
-      schemaHelpers.initializeCentralArrayOfComponents();
-      mapping = findMapping(displayType);
-      if (!mapping) {
-        console.log("Central array of components doesn't contain mapping for type " + displayType);
-        console.log("Property name " + propertyName);
-        console.log("Property definition: " + formatJson(propertyDefinition));
-        console.log("Using mapping for type string instead");
-        mapping = findMapping('string');
-      }
-    }
-
-    element = document.createElement(mapping.elementName);
+    element = document.createElement(elementName);
 
     element.label = label;
     element.required = required;
@@ -375,6 +271,7 @@
     // MPS-17 when mapping.elementName === 'at-form-lookup' [available, xvaluelist and enum are ignored ]
     var ignoreList = ["label", "value", "valid", "required", "disabled", "title", "type", "default" ];
     copyProperties(propertyNames, ignoreList, propertyDefinition, element);
+
     if (displayType === "toggle") {
       element.toggle = true;
     }
