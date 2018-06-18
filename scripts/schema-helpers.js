@@ -373,7 +373,7 @@
     // should not be copied to element [ type, xtype, default ]
     // or never present in json schema [ value, valid ]
     // MPS-17 when mapping.elementName === 'at-form-lookup' [available, xvaluelist and enum are ignored ]
-    var ignoreList = ["label", "value", "valid", "required", "disabled", "title", "type", "default", "available", "xvaluelist", "enum"];
+    var ignoreList = ["label", "value", "valid", "required", "disabled", "title", "type", "default" ];
     copyProperties(propertyNames, ignoreList, propertyDefinition, element);
     if (displayType === "toggle") {
       element.toggle = true;
@@ -388,7 +388,7 @@
       }
     }
 
-    if (displayType === "enum" || displayType === "radio") {
+    if (displayType === "radio") {
       var available = propertyDefinition.available;
       var xvaluelist = propertyDefinition.xvaluelist;
       var enumVal = propertyDefinition.enum;
