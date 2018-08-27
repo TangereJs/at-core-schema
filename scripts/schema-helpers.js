@@ -248,7 +248,7 @@
 
   var createElement = function (propertyName, displayType, propertyDefinition, elementName) {
     var element;
-    var label = notNull(propertyDefinition.title) ? propertyDefinition.title : capitalize(propertyName);
+    var label = notNull(propertyDefinition.title) ? propertyDefinition.title : "";
     var required = Boolean(propertyDefinition.required);
     var disabled = Boolean(propertyDefinition.disabled);
 
@@ -261,11 +261,6 @@
     element.label = label;
     element.required = required;
     element.disabled = disabled;
-
-    // at-form-complex should only have the label which is different from the default label
-    if (elementName == "at-form-complex" && label == capitalize(propertyName)) {
-      element.label = "";
-    }
 
     var propertyNames = getElementProperties(element);
 
