@@ -262,6 +262,11 @@
     element.required = required;
     element.disabled = disabled;
 
+    // at-form-complex should only have the label which is different from the default label
+    if (elementName == "at-form-complex" && label == capitalize(propertyName)) {
+      element.label = "";
+    }
+
     var propertyNames = getElementProperties(element);
 
     // ignore list is a list of properties that should not be copied using copy properties because they are
